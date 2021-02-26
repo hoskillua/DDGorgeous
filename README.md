@@ -37,7 +37,7 @@ bin/main <optional_path_to_a_mesh>
 
 ## Dependencies (all included)
 
-1. Geometry processing and linear algebra - [Geometry Central](https://github.com/nmwsharp/geometry-central), which in turn has dependencies on [Eigen](https://eigen.tuxfamily.org) and [Suitesparse](https://people.engr.tamu.edu/davis/suitesparse.html).
+1. Geometry processing and linear algebra - [Geometry Central](https://github.com/nmwsharp/geometry-central), which in turn has dependencies on [Eigen](https://eigen.tuxfamily.org) and/or [Suitesparse](https://people.engr.tamu.edu/davis/suitesparse.html).
 
 2. Visualization - [Polyscope](https://github.com/nmwsharp/polyscope)
 
