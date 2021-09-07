@@ -26,7 +26,7 @@ run a particular project `<project>`, go to the `projects/<project>` directory. 
 mkdir build
 cd build
 cmake ..
-make
+make -j4
 ```
 
 which builds an executable `main` which can then be run using
