@@ -108,7 +108,7 @@ SparseMatrix<size_t> SimplicialComplexOperators::buildFaceEdgeAdjacencyMatrix() 
  */
 Vector<size_t> SimplicialComplexOperators::buildVertexVector(const MeshSubset& subset) const {
 
-    Eigen::Matrix<size_t, Eigen::Dynamic ,1> V;
+    Vector <size_t> V;
     V.resize(mesh->nVertices(), 1);
     for (Vertex v : mesh->vertices())
         V[mesh->getVertexIndices()[v]] = 0;
@@ -161,7 +161,6 @@ Vector<size_t> SimplicialComplexOperators::buildFaceVector(const MeshSubset& sub
 MeshSubset SimplicialComplexOperators::star(const MeshSubset& subset) const {
 
     MeshSubset newsubset = subset.deepCopy();
-    Halfedge iterh;
 
     Vector<size_t> E0 = A0 * buildVertexVector(subset);
     for (Edge e : mesh->edges()) 
@@ -188,7 +187,6 @@ MeshSubset SimplicialComplexOperators::star(const MeshSubset& subset) const {
  */
 MeshSubset SimplicialComplexOperators::closure(const MeshSubset& subset) const {
     MeshSubset newsubset = subset.deepCopy();
-    Halfedge iterh;
 
     Vector<size_t> E0 = A1.transpose() * buildFaceVector(subset);
     for (Edge e : mesh->edges())
@@ -259,7 +257,34 @@ int SimplicialComplexOperators::isPureComplex(const MeshSubset& subset) const {
  * Returns: The boundary of the given subset.
  */
 MeshSubset SimplicialComplexOperators::boundary(const MeshSubset& subset) const {
-
-    /// TODO
-    return subset; // placeholder
+    MeshSubset newsubset;
+    int deg = //isPureComplex(subset);
+        1;
+    if (deg == 2)
+    {
+        Vector<size_t> E0 = A1.transpose() * buildFaceVector(subset);
+        for (Edge e : mesh->edges())
+        {
+            int i = mesh->getEdgeIndices()[e];
+            if (E0[i] == 1) newsubset.edges.insert(i);
+        }
+        return closure(newsubset);
+    }
+    else if (deg == 1)
+    {
+        Vector<size_t> V0 = A0.transpose() * buildEdgeVector(subset);
+        for (Vertex v : mesh->vertices())
+        {
+            int i = mesh->getVertexIndices()[v];
+            if (V0[i] == 1) newsubset.vertices.insert(i);
+        }
+        return closure(newsubset);
+    }
+    else if (deg == 0)
+        return newsubset;
+    else
+    {
+        /// error message ?
+        return subset;
+    }
 }
