@@ -232,9 +232,23 @@ MeshSubset SimplicialComplexOperators::link(const MeshSubset& subset) const {
  * Returns: True if given subset is a simplicial complex, false otherwise.
  */
 bool SimplicialComplexOperators::isComplex(const MeshSubset& subset) const {
+ 
+    Vector<size_t> E0 = A1.transpose() * buildFaceVector(subset);
+    Vector<size_t> E = buildEdgeVector(subset);
+    for (Edge e : mesh->edges())
+    {
+        int i = mesh->getEdgeIndices()[e];
+        if (E0[i] > 0 && E[i] == 0) return false;
+    }
+    Vector<size_t> V0 = A0.transpose() * E;
+    Vector<size_t> V = buildVertexVector(subset);
+    for (Vertex v : mesh->vertices())
+    {
+        int i = mesh->getVertexIndices()[v];
+        if (V0[i] > 0 && V[i] == 0) return false;
+    }
 
-    /// TODO
-    return false; // placeholder
+    return true; 
 }
 
 /*
@@ -246,8 +260,29 @@ bool SimplicialComplexOperators::isComplex(const MeshSubset& subset) const {
  */
 int SimplicialComplexOperators::isPureComplex(const MeshSubset& subset) const {
 
-    /// TODO
-    return -1; // placeholder
+    Vector<size_t> E0 = A0 * buildVertexVector(subset);
+    Vector<size_t> E = buildEdgeVector(subset);
+
+
+    for (Edge e : mesh->edges())
+    {
+        int i = mesh->getEdgeIndices()[e];
+        if (!(E0[i] == 2 && E[i] == 1) && !(E0[i] < 2 && E[i] == 0)) return -1;
+    }
+    if (subset.faces.size())
+    {
+        Vector<size_t> F0 = A1 * E;
+        Vector<size_t> F = buildFaceVector(subset);
+        for (Face f : mesh->faces())
+        {
+            int i = mesh->getFaceIndices()[f];
+            if (!(F0[i] == 3 && F[i] == 1) && !(F0[i] < 3 && F[i] == 0)) return -1;
+        }
+        return 2;
+    }
+    if (subset.edges.size())
+        return 1;
+    return 0;
 }
 
 /*
@@ -258,8 +293,7 @@ int SimplicialComplexOperators::isPureComplex(const MeshSubset& subset) const {
  */
 MeshSubset SimplicialComplexOperators::boundary(const MeshSubset& subset) const {
     MeshSubset newsubset;
-    int deg = //isPureComplex(subset);
-        1;
+    int deg = isPureComplex(subset);
     if (deg == 2)
     {
         Vector<size_t> E0 = A1.transpose() * buildFaceVector(subset);
