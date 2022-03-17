@@ -46,7 +46,6 @@ void SimplicialComplexOperators::assignElementIndices() {
     }
 
     // Geometry Central already sets the indices for us, though, so this function is just here for demonstration.
-    // You don't have to do anything :)
 }
 
 /*
@@ -57,7 +56,6 @@ void SimplicialComplexOperators::assignElementIndices() {
  */
 SparseMatrix<size_t> SimplicialComplexOperators::buildVertexEdgeAdjacencyMatrix() const {
 
-    /// TODO
     // Note: You can build an Eigen sparse matrix from triplets, then return it as a Geometry Central SparseMatrix.
     // See <https://eigen.tuxfamily.org/dox/group__TutorialSparse.html> for documentation.
     std::vector<Eigen::Triplet<size_t>> EV1 (mesh->nEdges() * 2);

@@ -80,8 +80,20 @@ double VertexPositionGeometry::totalArea() const {
  */
 double VertexPositionGeometry::cotan(Halfedge he) const {
 
-    // TODO
-    return 0; // placeholder
+
+    Vertex v0 = he.vertex();
+    Vertex v1 = he.next().next().vertex();
+    Vertex v2 = he.next().vertex();
+    Vector3 x0 = vertexPositions[mesh.getVertexIndices()[v0]] - vertexPositions[mesh.getVertexIndices()[v1]];
+    Vector3 x1 = vertexPositions[mesh.getVertexIndices()[v2]] - vertexPositions[mesh.getVertexIndices()[v1]];
+
+    float D = dot(x1, x0);
+    float C = cross(x1, x0).norm();
+
+    if (C < 1E-7)
+        C = 1E-7;
+
+    return D/C; 
 }
 
 /*
