@@ -123,8 +123,19 @@ SparseMatrix<double> VertexPositionGeometry::buildHodgeStar2Form() const {
  */
 SparseMatrix<double> VertexPositionGeometry::buildExteriorDerivative0Form() const {
 
-    // TODO
-    return identityMatrix<double>(1); // placeholder
+    std::vector<Eigen::Triplet<double>> EV1 (mesh.nEdges() * 2);
+    size_t ei = 0, i = 0;
+    for (Edge e : mesh.edges()) {
+        ei = mesh.getEdgeIndices()[e];
+        EV1[i] = Eigen::Triplet<double>( ei , mesh.getVertexIndices()[e.firstVertex()] , -1 );
+        EV1[i + 1] = Eigen::Triplet<double>(ei, mesh.getVertexIndices()[e.secondVertex()], 1);
+        i+=2;
+    }
+    Eigen::SparseMatrix<double> M0(mesh.nEdges(), mesh.nVertices());
+    
+    M0.setFromTriplets(EV1.begin(), EV1.end());
+
+    return M0;
 }
 
 /*
@@ -135,8 +146,22 @@ SparseMatrix<double> VertexPositionGeometry::buildExteriorDerivative0Form() cons
  */
 SparseMatrix<double> VertexPositionGeometry::buildExteriorDerivative1Form() const {
 
-    // TODO
-    return identityMatrix<double>(1); // placeholder
+    std::vector<Eigen::Triplet<double>> FE1;
+    size_t fi = 0;
+    for (Face f : mesh.faces()) {
+        fi = mesh.getFaceIndices()[f];
+        Halfedge iterh = f.halfedge();
+        for (int i = 0; i < f.degree(); i++)
+        {
+            FE1.push_back(Eigen::Triplet<double>(fi, mesh.getEdgeIndices()[iterh.edge()], 1));
+            iterh = iterh.next();
+        }
+    }
+    Eigen::SparseMatrix<double> M0(mesh.nFaces(), mesh.nEdges());
+
+    M0.setFromTriplets(FE1.begin(), FE1.end());
+
+    return M0;
 }
 
 } // namespace surface
