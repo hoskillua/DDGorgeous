@@ -84,14 +84,15 @@ double VertexPositionGeometry::cotan(Halfedge he) const {
     Vertex v0 = he.vertex();
     Vertex v1 = he.next().next().vertex();
     Vertex v2 = he.next().vertex();
-    Vector3 x0 = vertexPositions[mesh.getVertexIndices()[v0]] - vertexPositions[mesh.getVertexIndices()[v1]];
-    Vector3 x1 = vertexPositions[mesh.getVertexIndices()[v2]] - vertexPositions[mesh.getVertexIndices()[v1]];
 
-    float D = dot(x1, x0);
-    float C = cross(x1, x0).norm();
+    Vector3 x0 = inputVertexPositions[mesh.getVertexIndices()[v0]] - inputVertexPositions[mesh.getVertexIndices()[v1]];
+    Vector3 x1 = inputVertexPositions[mesh.getVertexIndices()[v2]] - inputVertexPositions[mesh.getVertexIndices()[v1]];
 
-    if (C < 1E-7)
-        C = 1E-7;
+    double D = dot(x1, x0);
+    double C = cross(x1, x0).norm();
+
+    if (C < 1E-9)
+        C = 1E-9;
 
     return D/C; 
 }
@@ -104,8 +105,39 @@ double VertexPositionGeometry::cotan(Halfedge he) const {
  */
 double VertexPositionGeometry::barycentricDualArea(Vertex v) const {
 
-    // TODO
-    return 0; // placeholder
+
+    /// Cotan Formula implementation was replaced for efficiency
+    
+    /*Halfedge iterh = v.halfedge();
+    
+    double S = 0;
+    Vector3 xi = inputVertexPositions[mesh.getVertexIndices()[v]];
+    
+
+    do {
+        
+        Vector3 xj = inputVertexPositions[mesh.getVertexIndices()[iterh.next().vertex()]];
+        Vector3 xk = inputVertexPositions[mesh.getVertexIndices()[iterh.next().next().vertex()]];
+
+        S += (xk - xi).norm2() * cotan(iterh) + (xj - xi).norm2() * cotan(iterh.next().next());
+        iterh = iterh.twin().next();
+    } while (iterh != v.halfedge());
+
+    return 0.125 * S;*/
+
+    Halfedge iterh = v.halfedge();
+
+    double S = 0;
+
+    do {
+        if(iterh.face().degree() == 3)
+            S += faceArea(iterh.face());
+        else
+            S += planepolygonArea(iterh.face());
+        iterh = iterh.twin().next();
+    } while (iterh != v.halfedge());
+
+    return S/3.0;
 }
 
 /*

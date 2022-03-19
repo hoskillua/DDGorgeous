@@ -42,8 +42,20 @@ namespace surface {
  */
 SparseMatrix<double> VertexPositionGeometry::buildHodgeStar0Form() const {
 
-    // TODO
-    return identityMatrix<double>(1); // placeholder
+    std::vector<Eigen::Triplet<double>> HV0(mesh.nVertices());
+
+    for (Vertex v : mesh.vertices())
+    {
+        int vi = mesh.getVertexIndices()[v];
+        HV0[vi] = Eigen::Triplet<double>(vi, vi, v.isBoundary()? 1 : barycentricDualArea(v));;
+    }
+
+    Eigen::SparseMatrix<double> H0(mesh.nVertices(), mesh.nVertices());
+
+    H0.setFromTriplets(HV0.begin(), HV0.end()); 
+
+    return H0;
+    //return identityMatrix<double>(1); // placeholder
 }
 
 /*
@@ -54,8 +66,20 @@ SparseMatrix<double> VertexPositionGeometry::buildHodgeStar0Form() const {
  */
 SparseMatrix<double> VertexPositionGeometry::buildHodgeStar1Form() const {
 
-    // TODO
-    return identityMatrix<double>(1); // placeholder
+    std::vector<Eigen::Triplet<double>> HV1(mesh.nEdges());
+
+    for (Edge e : mesh.edges())
+    {
+        int ei = mesh.getEdgeIndices()[e];
+        double length_ratio = e.isBoundary() ? 1 : 0.5 * (cotan(e.halfedge().next().next()) + cotan(e.halfedge().twin().next().next()));
+        HV1[ei] = Eigen::Triplet<double>(ei, ei, length_ratio);
+    }
+
+    Eigen::SparseMatrix<double> H1(mesh.nEdges(), mesh.nEdges());
+
+    H1.setFromTriplets(HV1.begin(), HV1.end());
+
+    return H1;
 }
 
 /*
@@ -66,8 +90,23 @@ SparseMatrix<double> VertexPositionGeometry::buildHodgeStar1Form() const {
  */
 SparseMatrix<double> VertexPositionGeometry::buildHodgeStar2Form() const {
 
-    // TODO
-    return identityMatrix<double>(1); // placeholder
+    std::vector<Eigen::Triplet<double>> HV2(mesh.nFaces());
+
+    for (Face f : mesh.faces())
+    {
+        int fi = mesh.getFaceIndices()[f];
+        double area = faceArea(f);
+        if (area < 1e-9)
+            area = 1e-9;
+        //double area = 0.5 * (cotan(f.halfedge().next().next()) + cotan(f.halfedge().twin().next().next()));
+        HV2[fi] = Eigen::Triplet<double>(fi, fi, 1/area);
+    }
+
+    Eigen::SparseMatrix<double> H2(mesh.nFaces(), mesh.nFaces());
+
+    H2.setFromTriplets(HV2.begin(), HV2.end());
+
+    return H2;
 }
 
 /*
