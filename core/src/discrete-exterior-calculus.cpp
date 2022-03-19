@@ -153,7 +153,7 @@ SparseMatrix<double> VertexPositionGeometry::buildExteriorDerivative1Form() cons
         Halfedge iterh = f.halfedge();
         for (int i = 0; i < f.degree(); i++)
         {
-            FE1.push_back(Eigen::Triplet<double>(fi, mesh.getEdgeIndices()[iterh.edge()], 1));
+            FE1.push_back(Eigen::Triplet<double>(fi, mesh.getEdgeIndices()[iterh.edge()], -1 + (2 * (iterh.edge().firstVertex() == iterh.vertex()))));
             iterh = iterh.next();
         }
     }
