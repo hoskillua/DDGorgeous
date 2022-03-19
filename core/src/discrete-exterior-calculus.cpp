@@ -47,7 +47,7 @@ SparseMatrix<double> VertexPositionGeometry::buildHodgeStar0Form() const {
     for (Vertex v : mesh.vertices())
     {
         int vi = mesh.getVertexIndices()[v];
-        HV0[vi] = Eigen::Triplet<double>(vi, vi, v.isBoundary()? 1 : barycentricDualArea(v));;
+        HV0[vi] = Eigen::Triplet<double>(vi, vi, barycentricDualArea(v));
     }
 
     Eigen::SparseMatrix<double> H0(mesh.nVertices(), mesh.nVertices());
@@ -71,7 +71,14 @@ SparseMatrix<double> VertexPositionGeometry::buildHodgeStar1Form() const {
     for (Edge e : mesh.edges())
     {
         int ei = mesh.getEdgeIndices()[e];
-        double length_ratio = e.isBoundary() ? 1 : 0.5 * (cotan(e.halfedge().next().next()) + cotan(e.halfedge().twin().next().next()));
+        double length_ratio;
+        if (e.isBoundary())
+            if (e.halfedge().isInterior())
+                length_ratio = cotan(e.halfedge().next().next());
+            else
+                length_ratio = cotan(e.halfedge().twin().next().next());
+        else
+            length_ratio = 0.5 * (cotan(e.halfedge().next().next()) + cotan(e.halfedge().twin().next().next()));
         HV1[ei] = Eigen::Triplet<double>(ei, ei, length_ratio);
     }
 
@@ -98,7 +105,6 @@ SparseMatrix<double> VertexPositionGeometry::buildHodgeStar2Form() const {
         double area = faceArea(f);
         if (area < 1e-9)
             area = 1e-9;
-        //double area = 0.5 * (cotan(f.halfedge().next().next()) + cotan(f.halfedge().twin().next().next()));
         HV2[fi] = Eigen::Triplet<double>(fi, fi, 1/area);
     }
 

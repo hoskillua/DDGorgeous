@@ -41,7 +41,6 @@ namespace surface {
 int VertexPositionGeometry::eulerCharacteristic() const {
     return (int)mesh.nVertices() - (int)mesh.nEdges() + (int)mesh.nFaces();
 }
-
 /*
  * Compute the mean length of all the edges in the mesh.
  *
@@ -133,9 +132,28 @@ double VertexPositionGeometry::barycentricDualArea(Vertex v) const {
         if(iterh.face().degree() == 3)
             S += faceArea(iterh.face());
         else
-            S += planepolygonArea(iterh.face());
+        {
+            // area of polygons in xy plane  
+            Face f = iterh.face();
+            Halfedge he = f.halfedge();
+            double area = 0.0;
+
+            // Calculate value of shoelace formula
+            do
+            {
+                Vector3 pA = inputVertexPositions[he.vertex()];
+                Vector3 pB = inputVertexPositions[he.next().vertex()];
+
+                area += (pA.x + pB.x) * (pA.y + pB.y);
+
+                he = he.next();
+            } while (he != f.halfedge());
+
+            // Return absolute value
+            S += abs(area / 2.0);
+        }
         iterh = iterh.twin().next();
-    } while (iterh != v.halfedge());
+    } while (iterh != v.halfedge() );
 
     return S/3.0;
 }
