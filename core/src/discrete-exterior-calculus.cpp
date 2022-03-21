@@ -74,11 +74,11 @@ SparseMatrix<double> VertexPositionGeometry::buildHodgeStar1Form() const {
         double length_ratio;
         if (e.isBoundary())
             if (e.halfedge().isInterior())
-                length_ratio = cotan(e.halfedge().next().next());
+                length_ratio = 0.5 * cotan(e.halfedge());
             else
-                length_ratio = cotan(e.halfedge().twin().next().next());
+                length_ratio = 0.5 * cotan(e.halfedge().twin());
         else
-            length_ratio = 0.5 * (cotan(e.halfedge().next().next()) + cotan(e.halfedge().twin().next().next()));
+            length_ratio = 0.5 * (cotan(e.halfedge()) + cotan(e.halfedge().twin()));
         HV1[ei] = Eigen::Triplet<double>(ei, ei, length_ratio);
     }
 
