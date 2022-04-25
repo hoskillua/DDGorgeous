@@ -28,4 +28,4 @@ I found dual meshes to be very interesting and I&#39;m very excited to learn mor
 
 [**Reading #5 – Curves and Surfaces - (P28-44)**](http://www.cs.cmu.edu/~kmcrane/Projects/DDG/paper.pdf)
 
-Surfaces can be represented in various ways, a useful one of which is by a map f from plane to space, alonge with an induced metric g describing how tangent vectors in the plane get stretched out by the map f.
+Surfaces can be represented in various ways, a useful one of which is by a map f from plane to space, along with an induced metric g describing how tangent vectors in the plane get stretched out by the map f.

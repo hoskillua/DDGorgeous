@@ -18,6 +18,7 @@ void SimplicialComplexOperators::assignElementIndices() {
     geometry->requireVertexIndices();
     geometry->requireEdgeIndices();
     geometry->requireFaceIndices();
+    
 
     // You can set the index field of a vertex via geometry->vertexIndices[v], where v is a Vertex object (or an
     // integer). Similarly you can do edges and faces via geometry->edgeIndices, geometry->faceIndices, like so:
@@ -69,6 +70,8 @@ SparseMatrix<size_t> SimplicialComplexOperators::buildVertexEdgeAdjacencyMatrix(
     Eigen::SparseMatrix<size_t> M0(mesh->nEdges(), mesh->nVertices());
     
     M0.setFromTriplets(EV1.begin(), EV1.end());
+
+    std::cout << geometry->totalArea();
 
     return M0;
 }
