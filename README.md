@@ -6,9 +6,9 @@ This code framework uses [Geometry Central](https://github.com/nmwsharp/geometry
 
 ## Results
 
-| Algorithms                                                                                 |                                                                       Illustration                                                                       | Result (GIF)                                                                                                    |
-| :----------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------: | --------------------------------------------------------------------------------------------------------------- |
-| Simplicial<br />Complex <br />Operations <br />(Star, <br />Closure, <br />Link, Boundary) | ![img](image/README/1650888559097.png) <br />![img](image/README/1650888578915.png) ![img](image/README/1650888604129.png) ![img](image/README/1650888865111.png) | ![](image/README/1650890398226.png)<br />![](image/README/1650890503193.png)<br />![](image/README/1650890508006.png) |
+|                                                                                                          Algorithm                                                                                                          | Result (GIF)                                                                   |
+| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------ |
+| Simplicial Complex Operations (Star, Closure, Link, Boundary)<br />![img](image/README/1650888559097.png) <br />![img](image/README/1650888578915.png) ![img](image/README/1650888604129.png) ![img](image/README/1650888865111.png) | ![img](image/README/1650890503193.png)<br />![img](image/README/1650890508006.png) |
 
 ## Dependencies (all included)
 
