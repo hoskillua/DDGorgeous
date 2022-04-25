@@ -6,9 +6,10 @@ This code framework uses [Geometry Central](https://github.com/nmwsharp/geometry
 
 ## Results
 
-|                                                                                                         Algorithm                                                                                                         | Result (GIF)                                                                   |
-| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------ |
-| Simplicial Complex Operations (Star, Closure, Link, Boundary)<br />![](image/README/1650891275357.png)<br />![](image/README/1650891304489.png)<br />![](image/README/1650891320023.png)<br />![](image/README/1650891245290.png) | ![img](image/README/1650890503193.png)<br />![img](image/README/1650890508006.png) |
+|                                                                                                               Algorithm                                                                                                               | Result (GIF)                                                                   |
+| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------ |
+| Simplicial Complex Operations (Star, Closure, Link, Boundary)<br />![img](image/README/1650891275357.png)<br />![img](image/README/1650891304489.png)<br />![img](image/README/1650891320023.png)<br />![img](image/README/1650891245290.png) | ![img](image/README/1650890503193.png)<br />![img](image/README/1650890508006.png) |
+|                                          Discrete Exterior Calculus Operators (Exterior Deravtive, Hodge Star)<br />![](image/README/1650891936774.png)<br />![](image/README/1650891955530.png)                                          | ![](image/README/1650902675076.png)                                              |
 
 ## Dependencies (all included)
 
