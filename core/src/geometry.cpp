@@ -168,7 +168,14 @@ double VertexPositionGeometry::barycentricDualArea(Vertex v) const {
 double VertexPositionGeometry::angle(Corner c) const {
 
     // TODO
-    return 0; // placeholder
+    const Vector3 pi = inputVertexPositions[c.vertex()];
+    const Vector3 pj = inputVertexPositions[c.halfedge().next().vertex()];
+    const Vector3 pk = inputVertexPositions[c.halfedge().next().next().vertex()];
+
+    const Vector3 vij = pj - pi;
+    const Vector3 vik = pk - pi;
+    
+    return acos(dot(vij, vik) / (norm(vij) * norm(vik)));
 }
 
 /*
@@ -178,9 +185,23 @@ double VertexPositionGeometry::angle(Corner c) const {
  * Returns: The dihedral angle.
  */
 double VertexPositionGeometry::dihedralAngle(Halfedge he) const {
-
     // TODO
-    return 0; // placeholder
+  const Vertex vi = he.tailVertex();
+  const Vertex vj = he.tipVertex();
+
+  Vector3 eij = inputVertexPositions[vj] - inputVertexPositions[vi];
+
+  const double eij_norm = norm(eij);
+
+  eij /= eij_norm;
+
+  const Face f1 = he.face();
+  const Face f2 = he.twin().face();
+
+  const Vector3 n1 = faceNormal(f1);
+  const Vector3 n2 = faceNormal(f2);
+
+  return atan2(dot(eij, cross(n1, n2)), dot(n1, n2));
 }
 
 /*
@@ -190,9 +211,16 @@ double VertexPositionGeometry::dihedralAngle(Halfedge he) const {
  * Returns: The "equally weighted" normal vector.
  */
 Vector3 VertexPositionGeometry::vertexNormalEquallyWeighted(Vertex v) const {
+  // TODO
 
-    // TODO
-    return {0, 0, 0}; // placeholder
+  
+  Vector3 nAvg = { 0, 0, 0 };
+  for (Face f : v.adjacentFaces())
+    nAvg += faceNormal(f);
+
+  nAvg = nAvg / norm(nAvg);
+
+  return nAvg;
 }
 
 /*
@@ -202,9 +230,15 @@ Vector3 VertexPositionGeometry::vertexNormalEquallyWeighted(Vertex v) const {
  * Returns: The "tip angle weights" normal vector.
  */
 Vector3 VertexPositionGeometry::vertexNormalAngleWeighted(Vertex v) const {
-
     // TODO
-    return {0, 0, 0}; // placeholder
+  
+  Vector3 nAvg = { 0, 0, 0 };
+  for (Corner c : v.adjacentCorners())
+    nAvg += angle(c) * faceNormal(c.face());
+
+  nAvg = nAvg / norm(nAvg);
+
+  return nAvg;
 }
 
 /*
@@ -216,7 +250,23 @@ Vector3 VertexPositionGeometry::vertexNormalAngleWeighted(Vertex v) const {
 Vector3 VertexPositionGeometry::vertexNormalSphereInscribed(Vertex v) const {
 
     // TODO
-    return {0, 0, 0}; // placeholder
+ 
+  Vector3 nAvg = { 0, 0, 0 };
+  for (Corner c : v.adjacentCorners())
+  {
+    const Vector3 pi = inputVertexPositions[c.vertex()];
+    const Vector3 pj = inputVertexPositions[c.halfedge().next().vertex()];
+    const Vector3 pk = inputVertexPositions[c.halfedge().next().next().vertex()];
+
+    const Vector3 eij = pj - pi;
+    const Vector3 eik = pk - pi;
+
+    nAvg += cross(eij, eik) / (norm2(eij) * norm2(eik));
+  }
+
+  nAvg = nAvg / norm(nAvg);
+
+  return nAvg;
 }
 
 /*
@@ -228,7 +278,14 @@ Vector3 VertexPositionGeometry::vertexNormalSphereInscribed(Vertex v) const {
 Vector3 VertexPositionGeometry::vertexNormalAreaWeighted(Vertex v) const {
 
     // TODO
-    return {0, 0, 0}; // placeholder
+
+  Vector3 nAvg = { 0, 0, 0 };
+  for (Face f : v.adjacentFaces())
+    nAvg += faceArea(f) * faceNormal(f);
+
+  nAvg = nAvg / norm(nAvg);
+
+  return nAvg;
 }
 
 /*
@@ -239,8 +296,31 @@ Vector3 VertexPositionGeometry::vertexNormalAreaWeighted(Vertex v) const {
  */
 Vector3 VertexPositionGeometry::vertexNormalGaussianCurvature(Vertex v) const {
 
-    // TODO
-    return {0, 0, 0}; // placeholder
+    // TODO 
+  Vector3 nGauss = { 0, 0, 0 };
+  for (Halfedge he : v.outgoingHalfedges())
+  {
+    // we are computing dihedral angle here instead of calling function to save edge vector calculations time
+    const Vertex vi = he.tailVertex();
+    const Vertex vj = he.tipVertex();
+
+    Vector3 eij = inputVertexPositions[vj] - inputVertexPositions[vi];
+
+    const double eij_norm = norm(eij);
+
+    eij /= eij_norm;
+
+    const Face f1 = he.face();
+    const Face f2 = he.twin().face();
+
+    const Vector3 n1 = faceNormal(f1);
+    const Vector3 n2 = faceNormal(f2);
+
+    nGauss += atan2(dot(eij, cross(n1, n2)), dot(n1, n2)) * eij;
+  }
+  nGauss /= 2;
+
+  return nGauss;
 }
 
 /*
@@ -252,7 +332,20 @@ Vector3 VertexPositionGeometry::vertexNormalGaussianCurvature(Vertex v) const {
 Vector3 VertexPositionGeometry::vertexNormalMeanCurvature(Vertex v) const {
 
     // TODO
-    return {0, 0, 0}; // placeholder
+  Vector3 nMean = { 0, 0, 0 };
+  for (Halfedge he : v.outgoingHalfedges())
+  {
+    // we are computing dihedral angle here instead of calling function to save edge vector calculations time
+    const Vertex vi = he.tailVertex();
+    const Vertex vj = he.tipVertex();
+
+    Vector3 eij = inputVertexPositions[vj] - inputVertexPositions[vi];
+
+    nMean += (cotan(he), cotan(he.twin())) * eij;
+  }
+  nMean /= 2;
+
+  return nMean;
 }
 
 /*
@@ -264,7 +357,11 @@ Vector3 VertexPositionGeometry::vertexNormalMeanCurvature(Vertex v) const {
 double VertexPositionGeometry::angleDefect(Vertex v) const {
 
     // TODO
-    return 0; // placeholder
+  double angleSum = 2 * PI;
+  for (Corner c : v.adjacentCorners())
+    angleSum -= angle(c);
+  angleSum /= circumcentricDualArea(v);
+  return angleSum;
 }
 
 /*
@@ -276,7 +373,15 @@ double VertexPositionGeometry::angleDefect(Vertex v) const {
 double VertexPositionGeometry::totalAngleDefect() const {
 
     // TODO
-    return 0; // placeholder
+    double totalAngleDefect = 0;
+    for (Vertex v : mesh.vertices())
+    {
+      double angleSum = 2 * PI;
+      for (Corner c : v.adjacentCorners())
+        angleSum -= angle(c);
+      totalAngleDefect += angleSum;
+    }
+    return totalAngleDefect;
 }
 
 /*
@@ -288,7 +393,29 @@ double VertexPositionGeometry::totalAngleDefect() const {
 double VertexPositionGeometry::scalarMeanCurvature(Vertex v) const {
 
     // TODO
-    return 0; // placeholder
+  double scalarMeanCurvature = 0;
+  for (Halfedge he : v.outgoingHalfedges())
+  {
+    // we are computing dihedral angle here instead of calling function to save edge vector calculations time
+    const Vertex vi = he.tailVertex();
+    const Vertex vj = he.tipVertex();
+
+    Vector3 eij = inputVertexPositions[vj] - inputVertexPositions[vi];
+
+    const double eij_norm = norm(eij);
+
+    const Face f1 = he.face();
+    const Face f2 = he.twin().face();
+
+    const Vector3 n1 = faceNormal(f1);
+    const Vector3 n2 = faceNormal(f2);
+    
+    scalarMeanCurvature += atan2(dot(eij, cross(n1, n2)), dot(n1, n2)) * eij_norm;
+  }
+  scalarMeanCurvature /= 2;
+  scalarMeanCurvature /= circumcentricDualArea(v);
+
+  return scalarMeanCurvature;
 }
 
 /*
@@ -300,7 +427,22 @@ double VertexPositionGeometry::scalarMeanCurvature(Vertex v) const {
 double VertexPositionGeometry::circumcentricDualArea(Vertex v) const {
 
     // TODO
-    return 0; // placeholder
+
+  double area = 0;
+  for (Corner c : v.adjacentCorners())
+  {
+    const Vector3 pi = inputVertexPositions[c.vertex()];
+    const Vector3 pj = inputVertexPositions[c.halfedge().next().vertex()];
+    const Vector3 pk = inputVertexPositions[c.halfedge().next().next().vertex()];
+
+    const Vector3 eij = pj - pi;
+    const Vector3 eik = pk - pi;
+
+    area += norm2(eij) * cotan(c.halfedge()) + norm2(eik) * cotan(c.halfedge().next().next());
+  }
+  area /= 8;
+
+  return area;
 }
 
 /*
