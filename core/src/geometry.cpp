@@ -298,7 +298,7 @@ Vector3 VertexPositionGeometry::vertexNormalGaussianCurvature(Vertex v) const {
 
     // TODO 
   Vector3 nGauss = { 0, 0, 0 };
-  for (Halfedge he : v.outgoingHalfedges())
+  for (Halfedge he : v.incomingHalfedges())
   {
     // we are computing dihedral angle here instead of calling function to save edge vector calculations time
     const Vertex vi = he.tailVertex();
@@ -318,7 +318,7 @@ Vector3 VertexPositionGeometry::vertexNormalGaussianCurvature(Vertex v) const {
 
     nGauss += atan2(dot(eij, cross(n1, n2)), dot(n1, n2)) * eij;
   }
-  nGauss /= 2;
+  nGauss /= norm(nGauss);
 
   return nGauss;
 }
@@ -333,7 +333,7 @@ Vector3 VertexPositionGeometry::vertexNormalMeanCurvature(Vertex v) const {
 
     // TODO
   Vector3 nMean = { 0, 0, 0 };
-  for (Halfedge he : v.outgoingHalfedges())
+  for (Halfedge he : v.incomingHalfedges())
   {
     // we are computing dihedral angle here instead of calling function to save edge vector calculations time
     const Vertex vi = he.tailVertex();
@@ -341,9 +341,10 @@ Vector3 VertexPositionGeometry::vertexNormalMeanCurvature(Vertex v) const {
 
     Vector3 eij = inputVertexPositions[vj] - inputVertexPositions[vi];
 
-    nMean += (cotan(he), cotan(he.twin())) * eij;
+
+    nMean += (cotan(he) + cotan(he.twin())) * eij;
   }
-  nMean /= 2;
+  nMean /= norm(nMean);
 
   return nMean;
 }
@@ -360,7 +361,6 @@ double VertexPositionGeometry::angleDefect(Vertex v) const {
   double angleSum = 2 * PI;
   for (Corner c : v.adjacentCorners())
     angleSum -= angle(c);
-  angleSum /= circumcentricDualArea(v);
   return angleSum;
 }
 
@@ -371,15 +371,11 @@ double VertexPositionGeometry::angleDefect(Vertex v) const {
  * Returns: The total angle defect
  */
 double VertexPositionGeometry::totalAngleDefect() const {
-
     // TODO
     double totalAngleDefect = 0;
     for (Vertex v : mesh.vertices())
     {
-      double angleSum = 2 * PI;
-      for (Corner c : v.adjacentCorners())
-        angleSum -= angle(c);
-      totalAngleDefect += angleSum;
+      totalAngleDefect += angleDefect(v);
     }
     return totalAngleDefect;
 }
@@ -394,7 +390,7 @@ double VertexPositionGeometry::scalarMeanCurvature(Vertex v) const {
 
     // TODO
   double scalarMeanCurvature = 0;
-  for (Halfedge he : v.outgoingHalfedges())
+  for (Halfedge he : v.incomingHalfedges())
   {
     // we are computing dihedral angle here instead of calling function to save edge vector calculations time
     const Vertex vi = he.tailVertex();
@@ -404,17 +400,9 @@ double VertexPositionGeometry::scalarMeanCurvature(Vertex v) const {
 
     const double eij_norm = norm(eij);
 
-    const Face f1 = he.face();
-    const Face f2 = he.twin().face();
-
-    const Vector3 n1 = faceNormal(f1);
-    const Vector3 n2 = faceNormal(f2);
-    
-    scalarMeanCurvature += atan2(dot(eij, cross(n1, n2)), dot(n1, n2)) * eij_norm;
+    scalarMeanCurvature += dihedralAngle(he) * eij_norm;
   }
   scalarMeanCurvature /= 2;
-  scalarMeanCurvature /= circumcentricDualArea(v);
-
   return scalarMeanCurvature;
 }
 
@@ -454,7 +442,13 @@ double VertexPositionGeometry::circumcentricDualArea(Vertex v) const {
 std::pair<double, double> VertexPositionGeometry::principalCurvatures(Vertex v) const {
 
     // TODO
-    return std::make_pair(0, 0); // placeholder
+  double Hx2 = 2 * scalarMeanCurvature(v) / circumcentricDualArea(v);
+  double G = angleDefect(v) / circumcentricDualArea(v);
+
+  double k2 = (Hx2 + sqrt(Hx2 * Hx2 - 4 * G)) / 2;
+  double k1 = Hx2 - k2;
+
+  return std::make_pair(std::min(k1,k2), std::max(k1,k2)); // placeholder
 }
 
 
