@@ -36,3 +36,5 @@
 **/*.DS_Store
 ~$screte Differential Geometry Readings Summaries.docx
 ~$ading Summaries.docx
+*.obj
+*.stl
