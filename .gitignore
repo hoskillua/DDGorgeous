@@ -38,3 +38,4 @@
 ~$ading Summaries.docx
 *.obj
 *.stl
+.vscode/settings.json
