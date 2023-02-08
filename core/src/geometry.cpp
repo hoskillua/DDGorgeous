@@ -79,6 +79,7 @@ double VertexPositionGeometry::totalArea() const {
  */
 double VertexPositionGeometry::cotan(Halfedge he) const {
 
+    if (!he.isInterior()) return 0;
 
     Vertex v0 = he.vertex();
     Vertex v1 = he.next().next().vertex();
@@ -93,7 +94,7 @@ double VertexPositionGeometry::cotan(Halfedge he) const {
     if (C < 1E-9)
         C = 1E-9;
 
-    return D/C; 
+    return D/C;
 }
 
 /*
@@ -106,15 +107,15 @@ double VertexPositionGeometry::barycentricDualArea(Vertex v) const {
 
 
     /// Cotan Formula implementation was replaced for efficiency
-    
+
     /*Halfedge iterh = v.halfedge();
-    
+
     double S = 0;
     Vector3 xi = inputVertexPositions[mesh.getVertexIndices()[v]];
-    
+
 
     do {
-        
+
         Vector3 xj = inputVertexPositions[mesh.getVertexIndices()[iterh.next().vertex()]];
         Vector3 xk = inputVertexPositions[mesh.getVertexIndices()[iterh.next().next().vertex()]];
 
@@ -133,7 +134,7 @@ double VertexPositionGeometry::barycentricDualArea(Vertex v) const {
             S += faceArea(iterh.face());
         else
         {
-            // area of polygons in xy plane  
+            // area of polygons in xy plane
             Face f = iterh.face();
             Halfedge he = f.halfedge();
             double area = 0.0;
@@ -174,7 +175,7 @@ double VertexPositionGeometry::angle(Corner c) const {
 
     const Vector3 vij = pj - pi;
     const Vector3 vik = pk - pi;
-    
+
     return acos(dot(vij, vik) / (norm(vij) * norm(vik)));
 }
 
@@ -213,7 +214,7 @@ double VertexPositionGeometry::dihedralAngle(Halfedge he) const {
 Vector3 VertexPositionGeometry::vertexNormalEquallyWeighted(Vertex v) const {
   // TODO
 
-  
+
   Vector3 nAvg = { 0, 0, 0 };
   for (Face f : v.adjacentFaces())
     nAvg += faceNormal(f);
@@ -231,7 +232,7 @@ Vector3 VertexPositionGeometry::vertexNormalEquallyWeighted(Vertex v) const {
  */
 Vector3 VertexPositionGeometry::vertexNormalAngleWeighted(Vertex v) const {
     // TODO
-  
+
   Vector3 nAvg = { 0, 0, 0 };
   for (Corner c : v.adjacentCorners())
     nAvg += angle(c) * faceNormal(c.face());
@@ -250,7 +251,7 @@ Vector3 VertexPositionGeometry::vertexNormalAngleWeighted(Vertex v) const {
 Vector3 VertexPositionGeometry::vertexNormalSphereInscribed(Vertex v) const {
 
     // TODO
- 
+
   Vector3 nAvg = { 0, 0, 0 };
   for (Corner c : v.adjacentCorners())
   {
@@ -296,7 +297,7 @@ Vector3 VertexPositionGeometry::vertexNormalAreaWeighted(Vertex v) const {
  */
 Vector3 VertexPositionGeometry::vertexNormalGaussianCurvature(Vertex v) const {
 
-    // TODO 
+    // TODO
   Vector3 nGauss = { 0, 0, 0 };
   for (Halfedge he : v.incomingHalfedges())
   {
@@ -476,10 +477,10 @@ SparseMatrix<double> VertexPositionGeometry::laplaceMatrix() const {
   }
 
   //for (auto i : L_entries) std::cout << i.row() << " " << i.col() << " " << i.value() << "\n";
-  
-  Eigen::SparseMatrix<double> L(mesh.nVertices(), mesh.nVertices());  
-  L.setFromTriplets(L_entries.begin(), L_entries.end());  
-  return L;                                       
+
+  Eigen::SparseMatrix<double> L(mesh.nVertices(), mesh.nVertices());
+  L.setFromTriplets(L_entries.begin(), L_entries.end());
+  return L;
 }
 
 /*
@@ -513,7 +514,29 @@ SparseMatrix<double> VertexPositionGeometry::massMatrix() const {
 SparseMatrix<std::complex<double>> VertexPositionGeometry::complexLaplaceMatrix() const {
 
     // TODO
-    return identityMatrix<std::complex<double>>(1); // placeholder
+  std::vector<Eigen::Triplet<std::complex<double>>> Cl_entries;
+
+  for (Vertex v : mesh.vertices()) {
+    double sum = 0;
+    for (Halfedge he : v.incomingHalfedges())
+    {
+      double L_val = (cotan(he) + cotan(he.twin())) / 2;
+      std::complex<double> Cl_val(- L_val, 0);
+      Cl_entries.push_back(Eigen::Triplet<std::complex<double>>(v.getIndex(), he.vertex().getIndex(), Cl_val));
+      sum += L_val;
+    }
+    std::complex<double> Cl_sum(sum + 1e-8, 0);
+
+    Cl_entries.push_back(Eigen::Triplet<std::complex<double>>(v.getIndex(), v.getIndex(), Cl_sum));
+  }
+
+  //for (auto i : L_entries) std::cout << i.row() << " " << i.col() << " " << i.value() << "\n";
+
+  Eigen::SparseMatrix<std::complex<double>> Cl(mesh.nVertices(), mesh.nVertices());
+  Cl.setFromTriplets(Cl_entries.begin(), Cl_entries.end());
+  return Cl;
+
+  return Cl; // placeholder
 }
 
 /*

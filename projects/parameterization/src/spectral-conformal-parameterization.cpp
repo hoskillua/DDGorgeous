@@ -18,9 +18,37 @@ SpectralConformalParameterization::SpectralConformalParameterization(ManifoldSur
  * Returns: A complex sparse matrix representing the conformal energy
  */
 SparseMatrix<std::complex<double>> SpectralConformalParameterization::buildConformalEnergy() const {
-
+    
     // TODO
-    return identityMatrix<std::complex<double>>(1); // placeholder
+  SparseMatrix<std::complex<double>> Ec = 0.5 * geometry->complexLaplaceMatrix();
+
+  std::vector<Eigen::Triplet<std::complex<double>>> A_entries;
+  
+  for(BoundaryLoop bl : mesh->boundaryLoops())
+    for (Halfedge he : bl.adjacentHalfedges())
+    {
+      A_entries.push_back(
+        Eigen::Triplet<std::complex<double>>(
+          he.tailVertex().getIndex(),
+          he.tipVertex().getIndex(), 
+          std::complex<double>(0, 0.25)
+          )
+      );
+      A_entries.push_back(
+        Eigen::Triplet<std::complex<double>>(
+          he.tipVertex().getIndex(),
+          he.tailVertex().getIndex(),
+          std::complex<double>(0, -0.25)
+          )
+      );
+    }
+
+  Eigen::SparseMatrix<std::complex<double>> A(Ec.rows(), Ec.cols());
+  A.setFromTriplets(A_entries.begin(), A_entries.end());
+
+  Ec -= A;
+
+  return Ec; // placeholder
 }
 
 
@@ -33,5 +61,20 @@ SparseMatrix<std::complex<double>> SpectralConformalParameterization::buildConfo
 VertexData<Vector2> SpectralConformalParameterization::flatten() const {
 
     // TODO
-    return VertexData<Vector2>(*mesh); // placeholder
+    SparseMatrix<std::complex<double>> Ec = buildConformalEnergy();
+
+    // Solve the eigenvalue problem with the smallest eigenvalue using solveInversePowerMethod
+    Vector<std::complex<double>> eig_vec;
+    eig_vec = solveInversePowerMethod(Ec);
+
+    VertexData<Vector2> result(*mesh);
+
+    for (Vertex v: mesh->vertices())
+    {
+      std::complex<double> result_cmplx = eig_vec[v.getIndex()];
+      result[v].x = result_cmplx.real();
+      result[v].y = result_cmplx.imag();
+    }
+
+    return result; // placeholder
 }
