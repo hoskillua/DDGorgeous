@@ -58,16 +58,16 @@ void MeanCurvatureFlow::integrate(double h) {
 
   for (int i = 0; i < 3; i++)
   {
-    positions[i] = - positions[i];
-    positions[i] = solveSquare(A, positions[i]);; // placeholder
+    positions[i] = M * positions[i];
+    positions[i] = solvePositiveDefinite(A, positions[i]);; // placeholder
   }
 
   // Note: Update positions via geometry->inputVertexPositions
   for (Vertex v : mesh->vertices()) {
-    geometry->inputVertexPositions[v] = { 
-       positions[0][v.getIndex()],
-       positions[1][v.getIndex()],
-       positions[2][v.getIndex()]
+    geometry->inputVertexPositions[v] = {
+        positions[0][v.getIndex()],
+        positions[1][v.getIndex()],
+        positions[2][v.getIndex()]
     };
   }
 }
