@@ -1,5 +1,3 @@
-![1676069059118](image/README/1676069059118.png)
-
 # DDGorgeous
 
 This repo contains implementations of a collection of discrete differnetial geometry algorithms. They are based on a [C++ skeleton code](https://github.com/GeometryCollective/ddg-exercises) for course assignments from [Discrete Differential Geometry](https://brickisland.net/DDGSpring2020/) (15-458/858).
@@ -13,7 +11,7 @@ This code framework uses [Geometry Central](https://github.com/nmwsharp/geometry
 | **Simplicial Complex Operations (Star, Closure, Link, Boundary)**<br />![img](image/README/1650891275357.png)<br />![img](image/README/1650891304489.png)<br />![img](image/README/1650891320023.png)<br />![img](image/README/1650891245290.png) |                                              ![img](image/README/1650890503193.png)<br />![img](image/README/1650890508006.png)                                              |
 |                                       **Discrete Exterior Calculus Operators (Exterior Deravtive, Hodge Star)**<br />![img](image/README/1650891936774.png)<br />![img](image/README/1650891955530.png)                                       |                                                                   ![img](image/README/1650902675076.png)                                                                   |
 |                                                                         **Vertex Normal Computation Methods<br />![1676067070587](image/README/1676067070587.png)**                                                                         |                                                                                                                                                                          |
-|                                                                           **Curvature Computation Methods<br />![1676069076977](image/README/1676069076977.png)**                                                                           | **kmin & kmax:**<br />![1676070259394](image/README/1676070259394.png)<br />**Mean & Gaussian Curvature:**<br />![1676070266904](image/README/1676070266904.png) |
+|                                                                           **Curvature Computation Methods<br />![1676070772224](image/README/1676070772224.png)**                                                                           | **kmin & kmax:**<br />![1676070259394](image/README/1676070259394.png)<br />**Mean & Gaussian Curvature:**<br />![1676070266904](image/README/1676070266904.png) |
 
 ## Dependencies (all included)
 
