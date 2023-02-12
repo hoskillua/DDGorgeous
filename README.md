@@ -10,13 +10,13 @@ This code framework uses [Geometry Central](https://github.com/nmwsharp/geometry
 
 # Table of Contents
 
-1. [Results](#results)
-  1. [Simplicial Complex Operations](#1-simplicial-complex-operations)
-  2. [Discrete Exterior Calculus Operators](#2-discrete-exterior-calculus-operators)
-  3. [Normals & Curvatures](#3-normals--curvatures)
-  4. [The Laplace-Beltrami Operator & its Applications](#4-the-laplace-beltrami-operator--its-applications)
-  5. [Geodesics: The Heat Method](#5-Geodesics:-The-Heat-Method)
-2. [Dependencies](#dependencies-(all-included))
+- [Results](#results)
+  - [1.Simplicial Complex Operations](#1-simplicial-complex-operations)
+  - [2.Discrete Exterior Calculus Operators](#2-discrete-exterior-calculus-operators)
+  - [3.Normals & Curvatures](#3-normals--curvatures)
+  - [4.The Laplace-Beltrami Operator & its Applications](#4-the-laplace-beltrami-operator--its-applications)
+  - [5.Geodesics: The Heat Method](#5-geodesics-the-heat-method)
+- [Dependencies](#dependencies-all-included)
 
 
 # Results
