@@ -13,11 +13,12 @@ This code framework uses [Geometry Central](https://github.com/nmwsharp/geometry
 - [Results](#results)
   - [1. Simplicial Complex Operations](#1-simplicial-complex-operations)
   - [2. Discrete Exterior Calculus Operators](#2-discrete-exterior-calculus-operators)
-  - [3. Normals & Curvatures](#3-normals--curvatures)
-  - [4. The Laplace-Beltrami Operator & its Applications](#4-the-laplace-beltrami-operator--its-applications)
+  - [3. Normals &amp; Curvatures](#3-normals--curvatures)
+  - [4. The Laplace-Beltrami Operator &amp; its Applications](#4-the-laplace-beltrami-operator--its-applications)
   - [5. Geodesics: The Heat Method](#5-geodesics-the-heat-method)
+  - [6. Conformal Parameterization](#6-conformal-parameterization)
+  - [7. Vector Field Decomposition and Design](#7-vector-field-decomposition-and-design)
 - [Dependencies](#dependencies-all-included)
-
 
 # Results
 
@@ -34,7 +35,7 @@ Given a mesh stored as a Halfedge structure, this part required building the inc
 
 <br />
 
-|                                                        Operator                                                        |                                          Results (GIF)                                          |
+|                                                        Operator                                                        |                                          Results (GIFs)                                          |
 | :---------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: |
 |      **Star & Closure**<br />![img](image/README/1650891275357.png)<br />![img](image/README/1650891304489.png)      | Can use them together repeateadly to grow a selection.<br />![img](image/README/1650890503193.png) |
 | **Link & Boundary**<br />![1676208491058](image/README/1676208491058.png)<br />![img](image/README/1650891245290.png) |  Can think of as an exclusive vs inclusive boundaries<br />![img](image/README/1650890508006.png)  |
@@ -77,15 +78,14 @@ I learned about a variety of ways to compute vertex normals, some of which are b
 </div>
 <br />
 
-I got to implement the Laplace-Beltrami based on the cotangent Laplacian. It was used to implement the Poisson equation solver which was used to smoothely interpolate a function on the mesh. It was also used to implement mesh smoothing using the mean curvature flow and the stationary Laplacian mean curvature flow. The Complex Laplacian was used to implement the conformal parameterization of a mesh.
+I got to implement the Laplace-Beltrami based on the cotangent Laplacian. It was used to implement the Poisson equation solver which was used to smoothely interpolate a function on the mesh. It was also used to implement mesh smoothing using the mean curvature flow and the stationary Laplacian mean curvature flow.
 
 <br />
 
-|                                              Algorithm                                              |                                                                                                                                                                                                                                              Results (GIF)                                                                                                                                                                                                                                              |
+|                                              Algorithm                                              |                                                                                                                                                                                                                                             Results (GIFs)                                                                                                                                                                                                                                             |
 | :-------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 |        **Poisson Equation<br /><br />![1676147668933](image/README/1676147668933.png)**        |                                                                                                                                                                                                                             ![1676148797658](image/README/1676148797658.png)                                                                                                                                                                                                                             |
 | **Smoothing using Curvature Flows<br /><br />![1676147729135](image/README/1676147729135.png)** | **Mean Curvature Flow** (11 iterations)<br />(Updating Laplace Matrix in each iteration Vs using the initial one)<br />*Using the initial matrix (only updating mass matrix) helps with avoiding singularities*<br />![flow1](image/README/meancurvature1.gif)<br /><br />**Stationary-Laplacian Mean Curvature flow**<br />(~ 40 iterations, step size 0.001 vs 11 with step size 0.01)<br />*step size affects speed of convergance*<br />![flow2](image/README/meancurvature2.gif) |
-|                                **Conformal Parameterization**                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ## 5. Geodesics: The Heat Method
 
@@ -98,9 +98,29 @@ Distance Computation was implemented using the heat method. This is based on a [
 
 <br />
 
-|                                                                                                                                                                                                                                                                     Algorithm                                                                                                                                                                                                                                                                     |                 Results (GIF)                 |
-| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------: |
+|                                                                                                                                                                                                                                                         Algorithm                                                                                                                                                                                                                                                         |                    Results                    |
+| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------: |
 | **Geodesics using**[ the Heat Method](https://www.cs.cmu.edu/~kmcrane/Projects/HeatMethod/) <br />![1676071513876](image/README/1676071513876.png)<br />![1676071566899](image/README/1676071566899.png)<br />(I) Heat is allowed to diffuse for short time (top-left). <br />(II) The temperature gradient (top-right) <br />is normalized & negated to get a field (bottom-left) pointing along geodesics. <br />(III) A function whose gradient follows the vector field recovers the final distance (bottom-right). | ![1676073261736](image/README/1676073261736.png) |
+
+## 6. Conformal Parameterization
+
+<div align="center">
+<img src="./image/README/1676236923500.png" style="width:500px" alt="Conformal Parameterization">
+</div>
+<br />
+
+This is also an application of the laplace-beltrami operator. The Complex Laplacian was used to implement the conformal parameterization of a mesh.
+
+<br />
+
+|                                        Algorithm                                        |                    Results                    |
+| :--------------------------------------------------------------------------------------: | :--------------------------------------------: |
+| **Conformal Parameterization**<br />![1676237751186](image/README/1676237751186.png) | ![1676237474389](image/README/1676237474389.png) |
+
+## 7. Vector Field Decomposition and Design
+
+TBA
+
 
 # Dependencies (all included)
 
